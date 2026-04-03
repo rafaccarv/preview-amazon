@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amazon Vendíta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── Variables ── */
+:root {
+  --pink:       #E8739A;
+  --pink-light: #F4AABF;
+  --pink-pale:  #FCEEF3;
+  --pink-dark:  #C0426D;
+  --offwhite:   #FBF8F5;
+  --cream:      #FFF5EE;
+  --text:       #2C1810;
+  --muted:      #8C6E63;
+  --radius:     16px;
+  --shadow:     0 4px 24px rgba(232,115,154,.18);
+  --shadow-lg:  0 12px 48px rgba(232,115,154,.25);
+  --tr:         .22s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background-color:var(--offwhite);
+  color:var(--text);
+  min-height:100vh;
+  background-image:
+    linear-gradient(rgba(232,115,154,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(232,115,154,.07) 1px,transparent 1px);
+  background-size:40px 40px;
+  background-attachment:fixed;
+}
+
+/* ── Page system ── */
+.page{display:none;animation:fadeIn .35s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Navbar ── */
+.navbar {
+  background:rgba(251,248,245,.93);
+  backdrop-filter:blur(12px);
+  border-bottom:2px solid var(--pink-light);
+  position:sticky;top:0;z-index:100;
+  padding:0 2rem;
+}
+.navbar-inner {
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:68px;gap:1rem;
+}
+.navbar-brand {
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;font-weight:900;
+  color:var(--pink-dark);text-decoration:none;cursor:pointer;
+  letter-spacing:-0.5px;
+}
+.navbar-brand span{color:var(--pink)}
+.navbar-links{display:flex;gap:1.6rem;align-items:center}
+.navbar-links a {
+  font-size:.9rem;font-weight:500;
+  color:var(--muted);text-decoration:none;cursor:pointer;
+  transition:color var(--tr);
+}
+.navbar-links a:hover{color:var(--pink-dark)}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:6rem 2rem 4rem}
+.hero-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.4rem,6vw,4.2rem);
+  font-weight:900;color:var(--pink-dark);
+  line-height:1.1;margin-bottom:1rem;
+}
+.hero-title em{font-style:italic;color:var(--pink)}
+.hero-subtitle {
+  font-size:clamp(1rem,2.5vw,1.25rem);
+  color:var(--muted);font-weight:300;
+  max-width:520px;margin:0 auto 2rem;line-height:1.6;
+}
+.hero-pill {
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--pink-pale);border:2px solid var(--pink-light);
+  border-radius:50px;padding:.45rem 1.2rem;
+  font-size:.85rem;font-weight:600;color:var(--pink-dark);
+  margin-bottom:2.5rem;
+}
+
+/* ── Section ── */
+.section{max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem}
+.section-title {
+  font-family:'Playfair Display',serif;
+  font-size:1.8rem;font-weight:700;color:var(--pink-dark);
+  margin-bottom:2rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.section-title::after {
+  content:'';flex:1;height:2px;
+  background:linear-gradient(90deg,var(--pink-light),transparent);
+  border-radius:2px;
+}
+
+/* ── Grid ── */
+.card-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2rem;
+}
+@media(max-width:900px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.card-grid{grid-template-columns:repeat(2,1fr);gap:1rem}}
+
+/* ── Category Card ── */
+.cat-card {
+  background:rgba(251,248,245,.97);
+  border:2px solid transparent;
+  border-radius:var(--radius);
+  overflow:hidden;
+  text-decoration:none;color:inherit;cursor:pointer;
+  transition:transform var(--tr),box-shadow var(--tr),border-color var(--tr);
+  display:flex;flex-direction:column;
+  box-shadow:var(--shadow);
+}
+.cat-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-lg);border-color:var(--pink-light)}
+
+.cat-img-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;position:relative}
+.cat-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.cat-card:hover .cat-img-wrap img{transform:scale(1.06)}
+
+.cat-placeholder{
+  width:100%;aspect-ratio:4/3;
+  background:linear-gradient(135deg,var(--pink-pale),var(--pink-light));
+  display:flex;align-items:center;justify-content:center;font-size:3.2rem;
+}
+.cat-card-body {
+  padding:1.2rem 1.4rem 1.4rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cat-card-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
+.cat-arrow {
+  width:32px;height:32px;border-radius:50%;
+  background:var(--pink);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;
+  transition:background var(--tr),transform var(--tr);
+}
+.cat-card:hover .cat-arrow{background:var(--pink-dark);transform:translateX(3px)}
+
+/* ── Product Card ── */
+.prod-card {
+  background:rgba(251,248,245,.98);
+  border:2px solid transparent;
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
+  transition:transform var(--tr),box-shadow var(--tr),border-color var(--tr);
+}
+.prod-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--pink-light)}
+
+.prod-img-wrap{width:100%;aspect-ratio:1/1;overflow:hidden}
+.prod-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.prod-card:hover .prod-img-wrap img{transform:scale(1.05)}
+
+.prod-placeholder{
+  width:100%;aspect-ratio:1/1;
+  background:linear-gradient(135deg,var(--pink-pale),#f0e8e0);
+  display:flex;align-items:center;justify-content:center;font-size:3.5rem;
+}
+.prod-card-body{padding:1.2rem 1.4rem 1.5rem;display:flex;flex-direction:column;flex:1;gap:.5rem}
+.prod-card-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700}
+.prod-card-desc{font-size:.875rem;color:var(--muted);line-height:1.55;flex:1}
+
+/* ── Buttons ── */
+.btn {
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.65rem 1.4rem;border-radius:50px;
+  font-size:.9rem;font-weight:600;cursor:pointer;
+  border:none;text-decoration:none;
+  transition:all var(--tr);
+  font-family:'DM Sans',sans-serif;
+}
+.btn-primary {
+  background:linear-gradient(135deg,var(--pink),var(--pink-dark));
+  color:#fff;box-shadow:0 4px 14px rgba(192,66,109,.3);
+}
+.btn-primary:hover{background:linear-gradient(135deg,var(--pink-dark),var(--pink));transform:translateY(-2px);box-shadow:0 8px 20px rgba(192,66,109,.4)}
+.btn-outline{background:transparent;border:2px solid var(--pink);color:var(--pink-dark)}
+.btn-outline:hover{background:var(--pink-pale)}
+.btn-full{width:100%;margin-top:.75rem}
+.btn-sm{padding:.45rem 1rem;font-size:.82rem}
+
+/* ── Back link ── */
+.back-link {
+  display:inline-flex;align-items:center;gap:.4rem;
+  color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;
+  margin-bottom:1.5rem;cursor:pointer;transition:color var(--tr);
+}
+.back-link:hover{color:var(--pink-dark)}
+
+/* ── Page header ── */
+.page-header{text-align:center;padding:3.5rem 2rem 2.5rem}
+.page-header-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,4vw,3rem);font-weight:900;color:var(--pink-dark);
+}
+.page-header-sub{color:var(--muted);font-size:1rem;margin-top:.5rem}
+
+/* ── Empty state ── */
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-icon{font-size:3.5rem;margin-bottom:1rem}
+.empty-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--pink-dark);margin-bottom:.4rem}
+.empty-sub{font-size:.95rem}
+
+/* ── Badge ── */
+.badge {
+  display:inline-flex;align-items:center;
+  padding:.2rem .7rem;border-radius:50px;
+  font-size:.78rem;font-weight:600;
+  background:var(--pink-pale);color:var(--pink-dark);
+}
+
+/* ── Footer ── */
+footer {
+  text-align:center;padding:2.5rem 1rem;
+  color:var(--muted);font-size:.85rem;
+  border-top:1px solid var(--pink-pale);
+}
+footer strong{color:var(--pink-dark);font-family:'Playfair Display',serif}
+
+/* ── Divider ── */
+.divider{height:2px;background:linear-gradient(90deg,transparent,var(--pink-light),transparent);margin:0 auto;max-width:200px;border-radius:2px}
+
+/* ══════════════════════════════════════════
+   ADMIN LAYOUT
+══════════════════════════════════════════ */
+.admin-wrap{display:flex;min-height:100vh}
+
+.sidebar {
+  width:260px;
+  background:linear-gradient(160deg,var(--pink-dark),#9b2355);
+  color:#fff;
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;z-index:200;
+  box-shadow:4px 0 24px rgba(0,0,0,.15);
+  transform:translateX(0);
+  transition:transform .3s ease;
+}
+.sidebar-header{padding:2rem 1.6rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.15)}
+.sidebar-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;cursor:pointer}
+.sidebar-logo span{opacity:.65}
+.sidebar-tag{
+  font-size:.72rem;background:rgba(255,255,255,.2);border-radius:4px;
+  padding:.1rem .5rem;margin-top:.4rem;display:inline-block;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.admin-nav{padding:1.4rem 0;flex:1}
+.nav-item {
+  display:flex;align-items:center;gap:.9rem;
+  padding:.8rem 1.6rem;color:rgba(255,255,255,.75);
+  text-decoration:none;font-size:.92rem;font-weight:500;cursor:pointer;
+  transition:all var(--tr);border-left:3px solid transparent;
+}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.12);color:#fff;border-left-color:rgba(255,255,255,.7)}
+.nav-icon{font-size:1.1rem;width:22px;text-align:center}
+.sidebar-footer{padding:1.2rem 1.6rem;border-top:1px solid rgba(255,255,255,.15)}
+
+.admin-main{
+  margin-left:260px;flex:1;
+  padding:2.5rem 2.5rem 4rem;
+  min-height:100vh;
+  max-width:calc(100% - 260px);
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-260px)}
+  .admin-main{margin-left:0;max-width:100%;padding:1.5rem}
+}
+
+.admin-title {
+  font-family:'Playfair Display',serif;
+  font-size:1.8rem;font-weight:900;color:var(--pink-dark);
+  margin-bottom:2rem;display:flex;align-items:center;gap:.75rem;
+}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:2.5rem}
+.stat-card {
+  background:rgba(251,248,245,.98);
+  border:2px solid var(--pink-pale);border-radius:var(--radius);
+  padding:1.6rem;box-shadow:var(--shadow);
+}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--pink-dark);line-height:1}
+.stat-lbl{font-size:.82rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem}
+
+/* Admin table */
+.tbl-wrap{background:rgba(251,248,245,.98);border:2px solid var(--pink-pale);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--pink-pale);color:var(--pink-dark);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;padding:1rem 1.2rem;text-align:left}
+td{padding:.95rem 1.2rem;border-bottom:1px solid var(--pink-pale);font-size:.9rem;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(232,115,154,.04)}
+.tbl-img{width:44px;height:44px;border-radius:8px;object-fit:cover;border:2px solid var(--pink-pale)}
+.tbl-ph{width:44px;height:44px;border-radius:8px;background:var(--pink-pale);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.tbl-actions{display:flex;gap:.5rem}
+.btn-danger{background:#e74c3c;color:#fff}
+.btn-danger:hover{background:#c0392b}
+
+/* Admin form */
+.form-card {
+  background:rgba(251,248,245,.98);border:2px solid var(--pink-pale);
+  border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);max-width:560px;
+}
+.form-group{margin-bottom:1.4rem}
+.form-label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.45rem}
+.form-control {
+  width:100%;padding:.7rem 1rem;
+  border:2px solid var(--pink-pale);border-radius:10px;
+  font-size:.92rem;font-family:'DM Sans',sans-serif;color:var(--text);
+  background:#fff;outline:none;
+  transition:border-color var(--tr),box-shadow var(--tr);
+}
+.form-control:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(232,115,154,.15)}
+textarea.form-control{resize:vertical;min-height:100px}
+.form-actions{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-top:2rem}
+.req{color:var(--pink)}
+
+/* section header row */
+.row-between{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+
+/* Login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.login-card {
+  background:rgba(251,248,245,.98);
+  border:2px solid var(--pink-pale);border-radius:24px;
+  padding:2.8rem 2.4rem;width:100%;max-width:400px;
+  box-shadow:var(--shadow-lg);text-align:center;
+}
+.login-logo{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--pink-dark)}
+.login-logo span{color:var(--pink)}
+.login-sub{font-size:.88rem;color:var(--muted);margin:.3rem 0 2rem}
+.login-card .form-group{text-align:left}
+.error-box{
+  background:#fde8e8;color:#8b1a1a;border-left:4px solid #e74c3c;
+  border-radius:10px;padding:.8rem 1.2rem;margin-bottom:1.2rem;
+  font-size:.88rem;text-align:left;
+}
+
+/* dash two col */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr}}
+.dash-sub{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--pink-dark);margin-bottom:1rem}
+
+/* notification */
+.notif {
+  padding:.9rem 1.4rem;border-radius:12px;margin-bottom:1.2rem;
+  font-weight:500;font-size:.92rem;display:flex;align-items:center;gap:.6rem;
+}
+.notif-success{background:#d4edda;color:#1a6930;border-left:4px solid #28a745}
+
+/* smooth scroll to top on page switch */
+.scroll-top{scroll-margin-top:80px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ PAGE: HOME ══════════════ -->
+<div id="p-home" class="page active">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <span class="navbar-brand" onclick="go('p-home')">Amazon <span>Vendíta</span></span>
+      <div class="navbar-links">
+        <a onclick="go('p-home')">Home</a>
+        <a onclick="go('p-login')">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-pill">✨ Curated picks, just for you</div>
+    <h1 class="hero-title">Your <em>Curated</em><br>Shopping Showcase</h1>
+    <p class="hero-subtitle">Discover handpicked products across every category, brought together for the modern shopper.</p>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Browse Categories</h2>
+    <div class="card-grid">
+
+      <div class="cat-card" onclick="go('p-cat-beauty')">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80" alt="Beauty"/>
+        </div>
+        <div class="cat-card-body">
+          <span class="cat-card-name">Beauty & Skincare</span>
+          <span class="cat-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="cat-card" onclick="go('p-cat-fashion')">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=80" alt="Fashion"/>
+        </div>
+        <div class="cat-card-body">
+          <span class="cat-card-name">Fashion</span>
+          <span class="cat-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="cat-card" onclick="go('p-cat-home')">
+        <div class="cat-img-wrap">
+          <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80" alt="Home"/>
+        </div>
+        <div class="cat-card-body">
+          <span class="cat-card-name">Home & Living</span>
+          <span class="cat-arrow">→</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><strong>Amazon Vendíta</strong> &nbsp;·&nbsp; Your curated shopping showcase</footer>
+</div>
+
+<!-- ══════════════ PAGE: CATEGORY – BEAUTY ══════════════ -->
+<div id="p-cat-beauty" class="page">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <span class="navbar-brand" onclick="go('p-home')">Amazon <span>Vendíta</span></span>
+      <div class="navbar-links">
+        <a onclick="go('p-home')">Home</a>
+        <a onclick="go('p-login')">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="page-header-title">Beauty & Skincare</h1>
+    <p class="page-header-sub">3 products available</p>
+  </div>
+
+  <div class="section">
+    <span class="back-link" onclick="go('p-home')">← Back to Categories</span>
+    <div class="card-grid">
+
+      <div class="prod-card">
+        <div class="prod-img-wrap">
+          <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80" alt="Serum"/>
+        </div>
+        <div class="prod-card-body">
+          <h3 class="prod-card-name">Vitamin C Glow Serum</h3>
+          <p class="prod-card-desc">Brightening formula with 15% pure Vitamin C, hyaluronic acid and niacinamide for radiant skin.</p>
+          <a href="https://amazon.com" target="_blank" class="btn btn-primary btn-full">🛒 Buy Now</a>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-img-wrap">
+          <img src="https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=500&q=80" alt="Moisturizer"/>
+        </div>
+        <div class="prod-card-body">
+          <h3 class="prod-card-name">Rose Petal Moisturizer</h3>
+          <p class="prod-card-desc">24-hour hydration with real rose extract and shea butter. Fragrance-free, dermatologist tested.</p>
+          <a href="https://amazon.com" target="_blank" class="btn btn-primary btn-full">🛒 Buy Now</a>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-img-wrap">
+          <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&q=80" alt="Palette"/>
+        </div>
+        <div class="prod-card-body">
+          <h3 class="prod-card-name">Blush & Glow Palette</h3>
+          <p class="prod-card-desc">12 shades of satin and shimmer blush for a natural, buildable flush all day long.</p>
+          <a href="https://amazon.com" target="_blank" class="btn btn-primary btn-full">🛒 Buy Now</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <footer><strong>Amazon Vendíta</strong> &nbsp;·&nbsp; Your curated shopping showcase</footer>
+</div>
+
+<!-- ══════════════ PAGE: CATEGORY – FASHION ══════════════ -->
+<div id="p-cat-fashion" class="page">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <span class="navbar-brand" onclick="go('p-home')">Amazon <span>Vendíta</span></span>
+      <div class="navbar-links">
+        <a onclick="go('p-home')">Home</a>
+        <a onclick="go('p-login')">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="page-header-title">Fashion</h1>
+    <p class="page-header-sub">2 products available</p>
+  </div>
+
+  <div class="section">
+    <span class="back-link" onclick="go('p-home')">← Back to Categories</span>
+    <div class="card-grid">
+
+      <div class="prod-card">
+        <div class="prod-img-wrap">
+          <img src="https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?w=500&q=80" alt="Bag"/>
+        </div>
+        <div class="prod-card-body">
+          <h3 class="prod-card-name">Linen Tote Bag</h3>
+          <p class="prod-card-desc">Natural linen, reinforced handles, interior pocket. The only tote you'll ever need.</p>
+          <a href="https://amazon.com" target="_blank" class="btn btn-primary btn-full">🛒 Buy Now</a>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-img-wrap">
+          <img src="https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?w=500&q=80" alt="Sunglasses"/>
+        </div>
+        <div class="prod-card-body">
+          <h3 class="prod-card-name">Oversized Sunglasses</h3>
+          <p class="prod-card-desc">UV400 polarized lenses in a retro tortoise shell acetate frame. Timeless and chic.</p>
+          <a href="https://amazon.com" target="_blank" class="btn btn-primary btn-full">🛒 Buy Now</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <footer><strong>Amazon Vendíta</strong> &nbsp;·&nbsp; Your curated shopping showcase</footer>
+</div>
+
+<!-- ══════════════ PAGE: CATEGORY – HOME (empty) ══════════════ -->
+<div id="p-cat-home" class="page">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <span class="navbar-brand" onclick="go('p-home')">Amazon <span>Vendíta</span></span>
+      <div class="navbar-links">
+        <a onclick="go('p-home')">Home</a>
+        <a onclick="go('p-login')">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1 class="page-header-title">Home & Living</h1>
+    <p class="page-header-sub">0 products available</p>
+  </div>
+
+  <div class="section">
+    <span class="back-link" onclick="go('p-home')">← Back to Categories</span>
+    <div class="card-grid">
+      <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <p class="empty-title">No products registered</p>
+        <p class="empty-sub">This category doesn't have any products yet.</p>
+      </div>
+    </div>
+  </div>
+  <footer><strong>Amazon Vendíta</strong> &nbsp;·&nbsp; Your curated shopping showcase</footer>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN LOGIN ══════════════ -->
+<div id="p-login" class="page">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">Amazon <span>Vendíta</span></div>
+      <p class="login-sub">Administrator Access</p>
+
+      <div id="login-error" class="error-box" style="display:none">⚠️ Invalid username or password.</div>
+
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-control" type="text" id="u-input" placeholder="Enter username"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" id="p-input" placeholder="Enter password"
+               onkeydown="if(event.key==='Enter')tryLogin()"/>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="tryLogin()">🔐 Sign In</button>
+
+      <p style="margin-top:1.4rem;font-size:.8rem;color:var(--muted)">
+        <span style="color:var(--pink-dark);cursor:pointer;text-decoration:underline" onclick="go('p-home')">← Back to store</span>
+        &nbsp;·&nbsp; <span style="color:var(--muted)">user: <strong>admin</strong> / pass: <strong>admin123</strong></span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN DASHBOARD ══════════════ -->
+<div id="p-admin" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item active" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <div class="notif notif-success">✅ Welcome back, <strong>admin</strong>!</div>
+      <h1 class="admin-title">📊 Dashboard</h1>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Total Categories</div></div>
+        <div class="stat-card"><div class="stat-num">5</div><div class="stat-lbl">Total Products</div></div>
+      </div>
+
+      <div class="dash-grid">
+        <div>
+          <div class="row-between">
+            <div class="dash-sub">Recent Categories</div>
+            <button class="btn btn-primary btn-sm" onclick="go('p-a-cat-new')">+ New</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Image</th><th>Name</th><th>Products</th></tr></thead>
+              <tbody>
+                <tr><td><div class="tbl-ph">🏠</div></td><td><strong>Home & Living</strong></td><td><span class="badge">0</span></td></tr>
+                <tr><td><div class="tbl-ph">👗</div></td><td><strong>Fashion</strong></td><td><span class="badge">2</span></td></tr>
+                <tr><td><div class="tbl-ph">💄</div></td><td><strong>Beauty & Skincare</strong></td><td><span class="badge">3</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:.75rem"><span class="back-link" onclick="go('p-a-cats')">View all categories →</span></div>
+        </div>
+        <div>
+          <div class="row-between">
+            <div class="dash-sub">Recent Products</div>
+            <button class="btn btn-primary btn-sm" onclick="go('p-a-prod-new')">+ New</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Image</th><th>Name</th><th>Category</th></tr></thead>
+              <tbody>
+                <tr><td><div class="tbl-ph">🕶️</div></td><td><strong>Oversized Sunglasses</strong></td><td><span class="badge">Fashion</span></td></tr>
+                <tr><td><div class="tbl-ph">👜</div></td><td><strong>Linen Tote Bag</strong></td><td><span class="badge">Fashion</span></td></tr>
+                <tr><td><div class="tbl-ph">💄</div></td><td><strong>Blush & Glow Palette</strong></td><td><span class="badge">Beauty</span></td></tr>
+                <tr><td><div class="tbl-ph">🌹</div></td><td><strong>Rose Petal Moisturizer</strong></td><td><span class="badge">Beauty</span></td></tr>
+                <tr><td><div class="tbl-ph">✨</div></td><td><strong>Vitamin C Serum</strong></td><td><span class="badge">Beauty</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:.75rem"><span class="back-link" onclick="go('p-a-prods')">View all products →</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN CATEGORIES LIST ══════════════ -->
+<div id="p-a-cats" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item active" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <div class="row-between">
+        <h1 class="admin-title" style="margin-bottom:0">🗂️ Categories</h1>
+        <button class="btn btn-primary" onclick="go('p-a-cat-new')">+ New Category</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Image</th><th>Name</th><th>Products</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="tbl-ph">💄</div></td>
+              <td><strong>Beauty & Skincare</strong></td>
+              <td><span class="badge">3 products</span></td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-cat-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️ Delete</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-ph">👗</div></td>
+              <td><strong>Fashion</strong></td>
+              <td><span class="badge">2 products</span></td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-cat-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️ Delete</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-ph">🏠</div></td>
+              <td><strong>Home & Living</strong></td>
+              <td><span class="badge">0 products</span></td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-cat-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️ Delete</button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN NEW CATEGORY ══════════════ -->
+<div id="p-a-cat-new" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item active" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <span class="back-link" onclick="go('p-a-cats')">← Back to Categories</span>
+      <h1 class="admin-title">➕ New Category</h1>
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">Category Name <span class="req">*</span></label>
+          <input class="form-control" type="text" placeholder="e.g. Electronics, Fashion, Beauty…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category Image</label>
+          <input class="form-control" type="file" accept="image/*"/>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="go('p-a-cats')">✅ Create Category</button>
+          <button class="btn btn-outline" onclick="go('p-a-cats')">Cancel</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN EDIT CATEGORY ══════════════ -->
+<div id="p-a-cat-edit" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item active" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <span class="back-link" onclick="go('p-a-cats')">← Back to Categories</span>
+      <h1 class="admin-title">✏️ Edit Category</h1>
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">Category Name <span class="req">*</span></label>
+          <input class="form-control" type="text" value="Beauty & Skincare"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category Image</label>
+          <input class="form-control" type="file" accept="image/*"/>
+          <div style="display:flex;align-items:center;gap:.8rem;margin-top:.6rem;font-size:.82rem;color:var(--muted)">
+            <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=100&q=80" style="width:56px;height:56px;border-radius:8px;object-fit:cover;border:2px solid var(--pink-pale)"/>
+            <span>Current image — upload a new one to replace it.</span>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="go('p-a-cats')">💾 Save Changes</button>
+          <button class="btn btn-outline" onclick="go('p-a-cats')">Cancel</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN PRODUCTS LIST ══════════════ -->
+<div id="p-a-prods" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item active" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <div class="row-between">
+        <h1 class="admin-title" style="margin-bottom:0">📦 Products</h1>
+        <button class="btn btn-primary" onclick="go('p-a-prod-new')">+ New Product</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Description</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="tbl-ph">✨</div></td>
+              <td><strong>Vitamin C Glow Serum</strong></td>
+              <td><span class="badge">Beauty</span></td>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.85rem">Brightening formula with 15% pure Vitamin C…</td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-prod-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-ph">🌹</div></td>
+              <td><strong>Rose Petal Moisturizer</strong></td>
+              <td><span class="badge">Beauty</span></td>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.85rem">24-hour hydration with real rose extract…</td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-prod-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-ph">💄</div></td>
+              <td><strong>Blush & Glow Palette</strong></td>
+              <td><span class="badge">Beauty</span></td>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.85rem">12 shades of satin and shimmer…</td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-prod-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-ph">👜</div></td>
+              <td><strong>Linen Tote Bag</strong></td>
+              <td><span class="badge">Fashion</span></td>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.85rem">Natural linen, reinforced handles…</td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-prod-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️</button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><div class="tbl-ph">🕶️</div></td>
+              <td><strong>Oversized Sunglasses</strong></td>
+              <td><span class="badge">Fashion</span></td>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:.85rem">UV400 polarized lenses…</td>
+              <td><div class="tbl-actions">
+                <button class="btn btn-outline btn-sm" onclick="go('p-a-prod-edit')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm">🗑️</button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN NEW PRODUCT ══════════════ -->
+<div id="p-a-prod-new" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item active" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <span class="back-link" onclick="go('p-a-prods')">← Back to Products</span>
+      <h1 class="admin-title">➕ New Product</h1>
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">Product Name <span class="req">*</span></label>
+          <input class="form-control" type="text" placeholder="e.g. Wireless Bluetooth Headphones"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category <span class="req">*</span></label>
+          <select class="form-control">
+            <option value="">-- Select a category --</option>
+            <option>Beauty & Skincare</option>
+            <option>Fashion</option>
+            <option>Home & Living</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" placeholder="Describe the product…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Buy Link (URL) <span class="req">*</span></label>
+          <input class="form-control" type="url" placeholder="https://www.amazon.com/product/..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Product Image</label>
+          <input class="form-control" type="file" accept="image/*"/>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="go('p-a-prods')">✅ Create Product</button>
+          <button class="btn btn-outline" onclick="go('p-a-prods')">Cancel</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: ADMIN EDIT PRODUCT ══════════════ -->
+<div id="p-a-prod-edit" class="page">
+  <div class="admin-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" onclick="go('p-home')">Amazon <span>Vendíta</span></div>
+        <div class="sidebar-tag">Admin Panel</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="nav-item" onclick="go('p-admin')"><span class="nav-icon">📊</span> Dashboard</div>
+        <div class="nav-item" onclick="go('p-a-cats')"><span class="nav-icon">🗂️</span> Categories</div>
+        <div class="nav-item active" onclick="go('p-a-prods')"><span class="nav-icon">📦</span> Products</div>
+        <div class="nav-item" onclick="go('p-home')"><span class="nav-icon">🌐</span> View Site</div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff" onclick="go('p-login')">🚪 Log Out</button>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <span class="back-link" onclick="go('p-a-prods')">← Back to Products</span>
+      <h1 class="admin-title">✏️ Edit Product</h1>
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">Product Name <span class="req">*</span></label>
+          <input class="form-control" type="text" value="Vitamin C Glow Serum"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category <span class="req">*</span></label>
+          <select class="form-control">
+            <option>Beauty & Skincare</option>
+            <option>Fashion</option>
+            <option>Home & Living</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-control">Brightening formula with 15% pure Vitamin C, hyaluronic acid and niacinamide for radiant skin.</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Buy Link (URL) <span class="req">*</span></label>
+          <input class="form-control" type="url" value="https://amazon.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Product Image</label>
+          <input class="form-control" type="file" accept="image/*"/>
+          <div style="display:flex;align-items:center;gap:.8rem;margin-top:.6rem;font-size:.82rem;color:var(--muted)">
+            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&q=80" style="width:56px;height:56px;border-radius:8px;object-fit:cover;border:2px solid var(--pink-pale)"/>
+            <span>Current image — upload a new one to replace it.</span>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="go('p-a-prods')">💾 Save Changes</button>
+          <button class="btn btn-outline" onclick="go('p-a-prods')">Cancel</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+function tryLogin() {
+  const u = document.getElementById('u-input').value.trim();
+  const p = document.getElementById('p-input').value.trim();
+  const err = document.getElementById('login-error');
+  if (u === 'admin' && p === 'admin123') {
+    err.style.display = 'none';
+    go('p-admin');
+  } else {
+    err.style.display = 'flex';
+  }
+}
+</script>
+</body>
+</html>
